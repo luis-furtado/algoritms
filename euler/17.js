@@ -23,37 +23,120 @@ function getDictionaryOfNumbers() {
     };
 
     const dictionaryDecimalNumber = {
-        'twenty': 20,
-        'thirty': 30,
-        'forty': 40,
-        'fifty': 50,
-        'sixty': 60,
-        'seventy': 70,
-        'eighty': 80,
-        'ninety': 90,
+        20: 'twenty',
+        30: 'thirty',
+        40: 'forty',
+        50: 'fifty',
+        60: 'sixty',
+        70: 'seventy',
+        80: 'eighty',
+        90: 'ninety',
     };
 
-    return { dictionaryBaseNumberFromOneToNineteen, dictionaryDecimalNumber };
+    const dictionaryHundredWords = {
+        100: 'onehundred',
+        200: 'twohundred',
+        300: 'threehundred',
+        400: 'fourhundred',
+        500: 'fivehundred',
+        600: 'sixhundred',
+        700: 'sevenhundred',
+        800: 'eighthundred',
+        900: 'ninehundred',
+    }
+
+    return { 
+        dictionaryHundredWords,
+        dictionaryDecimalNumber,
+        dictionaryBaseNumberFromOneToNineteen,
+    };
 }
 
-function countWords(stopNumber) {
-    for (i = 1; i <= stopNumber; i++) {
-        if (i < 20) {
-            currentNumber = Object.keys(dictionary.dictionaryBaseNumberFromOneToNineteen)[i];
-            totalWords+= dictionary.dictionaryBaseNumberFromOneToNineteen[currentNumber].length;
-        } else if (i >= 20 || i < 40 || i >= 80 || i < 100) {
-            currentDecimalNumber = Object.keys(dictionary.dictionaryDecimalNumber)[i];
-        }
+function countZeroToNineteenWords(currentNumber, dictionary) {
+    if (currentNumber > 0 && currentNumber < 20) {
+        return dictionary[currentNumber].length;
     }
+
+    return 0;
+}
+
+function countTwentyToNinetyNineWords(decimalBase, dictionary) {
+    if (decimalBase === 2) {
+        return dictionary[20].length;
+    } else if (decimalBase === 3) {
+        return dictionary[30].length;
+    } else if (decimalBase === 4) {
+        return dictionary[40].length;
+    } else if (decimalBase === 5) {
+        return dictionary[50].length;
+    } else if (decimalBase === 6) {
+        return dictionary[60].length;
+    } else if (decimalBase === 7) {
+        return dictionary[70].length;
+    } else if (decimalBase === 8) {
+        return dictionary[80].length;
+    } else if (decimalBase === 9) {
+        return dictionary[90].length;
+    }
+
+    return 0;
+}
+
+function countHundredWords(decimalBase, dictionary) {
+    if (decimalBase === 1) {
+        return dictionary[100].length;
+    } else if (decimalBase === 2) {
+        return dictionary[200].length;
+    } else if (decimalBase === 3) {
+        return dictionary[300].length;
+    } else if (decimalBase === 4) {
+        return dictionary[400].length;
+    } else if (decimalBase === 5) {
+        return dictionary[500].length;
+    } else if (decimalBase === 6) {
+        return dictionary[600].length;
+    } else if (decimalBase === 7) {
+        return dictionary[700].length;
+    } else if (decimalBase === 8) {
+        return dictionary[800].length;
+    } else if (decimalBase === 9) {
+        return dictionary[900].length;
+    }
+
+    return 0;
 }
 
 function getNumberLetterCounts(stopNumber) {
     const dictionary = getDictionaryOfNumbers();
-    return countWords(stopNumber);
+    var sum = 0;
+    for (i = 1; i <= stopNumber; i++) {
+        i.toString().split('').reverse().forEach((baseNumber, j) => {
+            // verify if decimal number is just to count zero to nineteen words
+            if (j === 0 && ['0', '1'].includes(i.toString().split('').reverse()[1])) {
+                return;
+            } else if (j === 1 && ['0', '1'].includes(i.toString().split('').reverse()[1])) {
+                const num = parseInt(i.toString().split('').reverse()[1].concat(i.toString().split('').reverse()[0]));
+                sum+= countZeroToNineteenWords(num, dictionary.dictionaryBaseNumberFromOneToNineteen);
+            } else if (j === 0) {
+                sum+= countZeroToNineteenWords(parseInt(baseNumber), dictionary.dictionaryBaseNumberFromOneToNineteen);
+            } else if (j === 1) {
+                sum+= countTwentyToNinetyNineWords(parseInt(baseNumber), dictionary.dictionaryDecimalNumber);
+            } else if (j === 2) {
+                sum+= countHundredWords(parseInt(baseNumber), dictionary.dictionaryHundredWords);
+                if (i.toString().split('').reverse()[1] !== '0' || i.toString().split('').reverse()[0] !== '0') {
+                    sum+= 'and'.length;
+                }
+            } else if (j === 3) {
+                sum+= 'onethousand'.length;
+            }
+        })
+    }
+
+    return sum;
 }
 
 function main() {
-    const stopNumber = 5;
+    const stopNumber = 1000;
     const result = getNumberLetterCounts(stopNumber);
 
     console.log(result);
